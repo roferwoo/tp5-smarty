@@ -14,6 +14,7 @@
             "email": "roferwoo@gmail.com"
         }
     ],
+    "minimum-stability": "dev",
     "require": {
         "php": ">=5.4.0",
         "smarty/smarty": "^3.1"
