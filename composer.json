@@ -1,0 +1,26 @@
+{
+    "name": "roferwoo/tp5-smarty",
+    "description": "ThinkPHP5 Smarty Template Driver Support Template Theme",
+    "license": "MIT",
+    "keywords": [
+        "ThinkPHP5",
+        "TP5",
+        "Smarty",
+        "Theme"
+    ],
+    "authors": [
+        {
+            "name": "roferwoo",
+            "email": "roferwoo@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "smarty/smarty": "^3.1"
+    },
+    "autoload": {
+        "classmap": {
+            "think\\view\\driver\\Smarty": "src/Smarty.php"
+        }
+    }
+}
