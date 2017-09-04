@@ -111,6 +111,9 @@ class Smarty
      */
     public function fetch($template, $data = [], $config = [])
     {
+        if (!empty($config)) {
+            $this->config($config);
+        }
         if ('' == pathinfo($template, PATHINFO_EXTENSION)) {
             // 获取模板文件名
             $template = $this->parseTemplate($template);
@@ -125,7 +128,25 @@ class Smarty
         // 赋值模板变量
         $this->template->assign($data);
         // 输出
-        echo strtr($this->template->fetch($template), array_merge(Config::get('view_replace_str'), $this->defaultReplace, $config));
+        $replace_arr = array_merge(Config::get('view_replace_str'), $this->defaultReplace);
+        if (!empty($this->config['page_layout']['no_header']) || empty($this->config['page_layout']['header'])) {
+            $header = '';
+        } else {
+            $header_tpl = $this->parseTemplate($this->config['page_layout']['header']);
+            $header = strtr($this->template->fetch($header_tpl), $replace_arr);
+        }
+
+        $content = strtr($this->template->fetch($template), $replace_arr);
+
+        if (!empty($this->config['page_layout']['no_footer']) || empty($this->config['page_layout']['footer'])) {
+            $footer = '';
+        } else {
+            $footer_tpl = $this->parseTemplate($this->config['page_layout']['footer']);
+            $footer = strtr($this->template->fetch($footer_tpl), $replace_arr);
+        }
+
+        echo $header . $content . $footer;
+
     }
 
     /**
@@ -190,6 +211,24 @@ class Smarty
             $template = str_replace(['/', ':'], $depr, substr($template, 1));
         }
         return $path . $this->theme . ltrim($template, '/') . '.' . ltrim($this->config['view_suffix'], '.');
+    }
+
+    /**
+     * 配置模板引擎
+     * @access private
+     * @param string|array  $name 参数名
+     * @param mixed         $value 参数值
+     * @return void
+     */
+    public function config($name, $value = null)
+    {
+        if (is_array($name)) {
+            $this->config = array_merge($this->config, $name);
+        } elseif (is_null($value)) {
+            return isset($this->config[$name]) ? $this->config[$name] : null;
+        } else {
+            $this->config[$name] = $value;
+        }
     }
 
     public function __call($method, $params)
