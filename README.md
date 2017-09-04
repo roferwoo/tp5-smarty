@@ -14,3 +14,13 @@ composer require roferwoo/tp5-smarty
 ```
 
 ## 配置参数
+在ThinkPHP5的基础上，可添加配置以下参数：
+```
+// 模板主题目录
+'view_theme'   => 'default',
+// 模板布局
+'page_layout' => [
+    'header' => 'path/to/header.html', // 或 'no_header' => 1,
+    'footer' => 'path/to/footer.html', // 或 'no_footer' => 1,
+],
+```
