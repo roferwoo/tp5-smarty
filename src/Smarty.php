@@ -17,6 +17,7 @@ namespace think\view\driver;
 use think\App;
 use think\exception\TemplateNotFoundException;
 use think\Loader;
+use think\Config;
 use think\Log;
 use think\Request;
 use Smarty as LibSmarty;
@@ -27,6 +28,8 @@ class Smarty
     private $template = null;
     // 模板主题路径
     private $theme = '';
+    // 模板默认输出替换
+    private $defaultReplace = [];
     // 模板引擎参数
     protected $config = [
         // 模板主题目录
@@ -57,9 +60,10 @@ class Smarty
     public function __construct($config = [])
     {
         $this->config = array_merge($this->config, $config);
+        // 模板主题目录
         $this->theme = !empty($this->config['view_theme']) ? $this->config['view_theme'] . DS : '';
         if (empty($this->config['view_path'])) {
-            $this->config['view_path'] = App::$modulePath . 'view' . DS . $this->theme;
+            $this->config['view_path'] = App::$modulePath . 'view' . DS;
         }
 
         if (empty($this->config['cache_path'])) {
@@ -117,7 +121,11 @@ class Smarty
         }
         // 记录视图信息
         App::$debug && Log::record('[ VIEW ] ' . $template . ' [ ' . var_export(array_keys($data), true) . ' ]', 'info');
-        $this->template->fetch($template, $data, $config);
+
+        // 赋值模板变量
+        $this->template->assign($data);
+        // 输出
+        echo strtr($this->template->fetch($template), array_merge(Config::get('view_replace_str'), $this->defaultReplace, $config));
     }
 
     /**
@@ -130,7 +138,7 @@ class Smarty
      */
     public function display($template, $data = [], $config = [])
     {
-        $this->template->display($template, $data, $config);
+        $this->fetch($template, $data, $config);
     }
 
     /**
@@ -143,6 +151,16 @@ class Smarty
     {
         // 分析模板文件规则
         $request = Request::instance();
+        $defaultReplace = [
+            '__DOMAIN__' => $request->domain(), // 当前域名
+            '__ROOT__' => pathinfo($request->baseFile(true), PATHINFO_DIRNAME),
+            '__SELF__' => $request->url(TRUE), // 当前完全URL地址
+            '__APP__'  => $request->baseFile(true) // 当前请求的脚本文件
+        ];
+        $defaultReplace['__STATIC__'] = $defaultReplace['__ROOT__'] . '/static';
+        $defaultReplace['__LIBS__'] = $defaultReplace['__STATIC__'] . '/libs';
+        $defaultReplace['__THEME__'] = $defaultReplace['__STATIC__'] . (!empty($this->theme) ? '/' . rtrim($this->theme, '/') : '');
+
         // 获取视图根目录
         if (strpos($template, '@')) {
             // 跨模块调用

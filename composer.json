@@ -1,7 +1,7 @@
 {
     "type": "project",
     "name": "roferwoo/tp5-smarty",
-    "homepage": "http://wuzhiwei.cn",
+    "homepage": "https://github.com/roferwoo/tp5-smarty",
     "description": "ThinkPHP5 Smarty Template Driver Support Template Theme",
     "license": "MIT",
     "keywords": [
