@@ -172,15 +172,15 @@ class Smarty
     {
         // 分析模板文件规则
         $request = Request::instance();
-        $defaultReplace = [
+        $this->defaultReplace = [
             '__DOMAIN__' => $request->domain(), // 当前域名
             '__ROOT__' => pathinfo($request->baseFile(true), PATHINFO_DIRNAME),
             '__SELF__' => $request->url(TRUE), // 当前完全URL地址
             '__APP__'  => $request->baseFile(true) // 当前请求的脚本文件
         ];
-        $defaultReplace['__STATIC__'] = $defaultReplace['__ROOT__'] . '/static';
-        $defaultReplace['__LIBS__'] = $defaultReplace['__STATIC__'] . '/libs';
-        $defaultReplace['__THEME__'] = $defaultReplace['__STATIC__'] . (!empty($this->theme) ? '/' . rtrim($this->theme, '/') : '');
+        $this->defaultReplace['__STATIC__'] = $defaultReplace['__ROOT__'] . '/static';
+        $this->defaultReplace['__LIBS__'] = $defaultReplace['__STATIC__'] . '/libs';
+        $this->defaultReplace['__THEME__'] = $defaultReplace['__STATIC__'] . (!empty($this->theme) ? '/' . rtrim($this->theme, '/') : '');
 
         // 获取视图根目录
         if (strpos($template, '@')) {
